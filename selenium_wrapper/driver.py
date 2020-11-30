@@ -3,13 +3,14 @@ import os
 import tempfile
 import time
 
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import WebDriverException, TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from .history import History
 from .logger import Logger
+from .exceptions import WrappedException
 
 logger = Logger(logging.getLogger(__name__))
 
@@ -33,7 +34,14 @@ class Driver:
 
     def get(self, url, wait=None):
         logger.info('Get', url)
-        self.driver.get(url)
+        try:
+            self.driver.get(url)
+        except WebDriverException as ex:
+            logger.error('Error', f'Failed to get url {url}, underlying exception {ex}')
+            if self.handle_method == 'break':
+                breakpoint()
+            else:
+                raise WrappedException('Failed to get url {url}', ex)
         wait = wait if wait is not None else self.default_wait
         if wait:
             logger.info('', f'Get complete, now waiting {wait} seconds for any JS updates')
