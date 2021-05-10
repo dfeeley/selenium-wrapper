@@ -7,6 +7,8 @@ exception handling.
 
 Also includes a factory for constructing either local or remote webdrivers.
 
+In local mode console will be viewable at http://localhost:4444/wd/hub/static/resource/hub.html
+
 ```python
 from selenium_wrapper import factory
 

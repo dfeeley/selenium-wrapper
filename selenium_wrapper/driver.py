@@ -3,9 +3,11 @@ import os
 import tempfile
 import time
 
-from selenium.common.exceptions import WebDriverException, TimeoutException, NoSuchElementException
+from selenium.common.exceptions import (
+    WebDriverException, TimeoutException, NoSuchElementException
+)
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 
 from .history import History
@@ -50,9 +52,11 @@ class Driver:
         if self.debug:
             self.history.record(url, self.full_page_source, self.driver.get_screenshot_as_png())
 
-    def quit(self):
+    def quit(self, sleep=None):
         if self.debug:
             self.history.write()
+        if sleep:
+            self.sleep(sleep)
         self.driver.quit()
 
     def __getattr__(self, attr):
@@ -69,7 +73,7 @@ class Driver:
         logger.info('Sleep', f'{seconds} seconds')
         time.sleep(seconds)
 
-    def find(self, selector, by='css_selector'):
+    def find(self, selector, by='css_selector', handle='raise'):
         logger.info('Find', f'{selector!r}')
         method = getattr(self, f'find_element_by_{by}')
         try:
@@ -78,10 +82,19 @@ class Driver:
             return elem
         except NoSuchElementException:
             logger.warn('', f'...{selector!r} not found!')
-            if self.handle_method == 'break':
+            if handle == 'ignore':
+                return
+            elif handle == 'raise':
+                raise
+            elif handle == 'quit':
+                self.quit()
+            elif handle == 'debug':
                 breakpoint()
             else:
-                self.quit()
+                raise ValueError(
+                    f'Invalid handle value {handle!r} passed to find.'
+                    f'Options are raise, ignore, quit, debut'
+                )
 
     def wait_for(self, selector, by='css_selector', condition='presence_of_element_located', timeout=20):
         logger.info('Wait', f'{selector!r} / {condition!r}')
@@ -101,6 +114,10 @@ class Driver:
                 breakpoint()
             else:
                 self.quit()
+
+    def get_select(self, selector, by='css_selector'):
+        elem = self.find(selector, by=by)
+        return Select(elem)
 
     def _ensure_log_dir_exists(self):
         if os.path.exists(self.log_dir):
