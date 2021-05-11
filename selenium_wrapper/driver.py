@@ -106,10 +106,10 @@ class Driver:
             condition_param = selector
         try:
             elem = WebDriverWait(self.driver, timeout).until(cond(condition_param))
-            logger.info('', 'Wait success, found the waited for element {selector!r}')
+            logger.info('', f'Wait success, found the waited for element {selector!r}')
             return elem
         except TimeoutException:
-            logger.warn('', 'Wait fail, did not find the waited for element {selector!r} in {timeout} seconds')
+            logger.warn('', f'Wait fail, did not find the waited for element {selector!r} in {timeout} seconds')
             if self.handle_method == 'break':
                 breakpoint()
             else:

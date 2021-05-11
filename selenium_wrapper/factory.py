@@ -11,6 +11,10 @@ def remote(url, browser='chrome', headless=False, **kwargs):
 
     options = Options()
     options.headless = headless
+    options.add_argument('--remote-debugging-port=9222')
+    options.add_argument('--remote-debugging-address=0.0.0.0')
+    options.add_argument('--user-data-dir=/home/seluser/custom_profile')
+
     prefs = {
         "profile.default_content_settings.popups": 0,
         'profile.default_content_setting_values.automatic_downloads': 1,
