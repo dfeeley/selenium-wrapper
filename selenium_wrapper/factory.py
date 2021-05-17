@@ -1,3 +1,4 @@
+import os
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
@@ -38,4 +39,7 @@ def local(browser='chrome', headless=False, **kwargs):
     options = Options()
     options.headless = headless
     driver = webdriver.Chrome(exec, options=options)
+    if headless:
+        params = {'behavior': 'allow', 'downloadPath': os.path.expanduser('~/Downloads')}
+        driver.execute_cdp_cmd('Page.setDownloadBehavior', params)
     return Driver(driver, **kwargs)
