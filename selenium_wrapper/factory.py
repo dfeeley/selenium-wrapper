@@ -6,17 +6,11 @@ from selenium.webdriver.chrome.options import Options
 from .driver import Driver
 
 
-def remote(url, browser='chrome', headless=False, **kwargs):
+def remote(url, browser='chrome', **kwargs):
     if browser != 'chrome':
         raise ValueError(f'Browser {browser} not currently supported')
 
-    options = Options()
-    options.headless = headless
-    options.add_argument('--remote-debugging-port=9222')
-    options.add_argument('--remote-debugging-address=0.0.0.0')
-    options.add_argument('--user-data-dir=/home/seluser/custom_profile')
-    options.add_argument('--profile-directory=AutoProfile')
-
+    options = _options(**kwargs)
     prefs = {
         "profile.default_content_settings.popups": 0,
         'profile.default_content_setting_values.automatic_downloads': 1,
@@ -31,15 +25,34 @@ def remote(url, browser='chrome', headless=False, **kwargs):
     return Driver(driver, **kwargs)
 
 
-def local(browser='chrome', headless=False, **kwargs):
+def local(browser='chrome', **kwargs):
     if browser == 'chrome':
         exec = 'chromedriver'
     else:
         raise ValueError(f'Browser {browser} not currently supported')
-    options = Options()
-    options.headless = headless
+    options = _options(**kwargs)
     driver = webdriver.Chrome(exec, options=options)
-    if headless:
-        params = {'behavior': 'allow', 'downloadPath': os.path.expanduser('~/Downloads')}
+    if kwargs.get('headless', False):
+        download_dir = kwargs.get('download-dir', os.path.expanduser('~/Downloads'))
+        params = {'behavior': 'allow', 'downloadPath': download_dir}
         driver.execute_cdp_cmd('Page.setDownloadBehavior', params)
     return Driver(driver, **kwargs)
+
+
+def _options(**kwargs):
+    options = Options()
+    options.headless = kwargs.get('headless', False)
+    default_user_agent = (
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/88.0.4324.182 Safari/537.36'
+    )
+    user_agent = kwargs.get('user_agent', default_user_agent)
+    data_dir = kwargs.get('user-data-dir', os.path.expanduser('~/.config/google-chrome-auto'))
+    profile = kwargs.get('profile', 'Default')
+    options.add_argument('disable-gpu')
+    options.add_argument(f'user-data-dir={data_dir}')
+    options.add_argument(f'user-agent={user_agent}')
+    options.add_argument(f'profile-directory={profile}')
+    options.add_argument('remote-debugging-port=9222')
+    options.add_argument('remote-debugging-address=0.0.0.0')
+    return options
