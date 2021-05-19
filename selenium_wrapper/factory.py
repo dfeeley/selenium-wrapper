@@ -47,7 +47,7 @@ def _options(**kwargs):
         'Chrome/88.0.4324.182 Safari/537.36'
     )
     user_agent = kwargs.get('user_agent', default_user_agent)
-    data_dir = kwargs.get('user-data-dir', os.path.expanduser('~/.config/google-chrome-auto'))
+    data_dir = kwargs.get('user_data_dir', os.path.expanduser('~/.config/google-chrome-auto'))
     profile = kwargs.get('profile', 'Default')
     options.add_argument('disable-gpu')
     options.add_argument(f'user-data-dir={data_dir}')
