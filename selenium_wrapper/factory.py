@@ -50,7 +50,6 @@ def _options(**kwargs):
     data_dir = kwargs.get('user_data_dir', os.path.expanduser('~/.config/google-chrome-auto'))
     window_size = kwargs.get('window_size', '2560,1440')
     profile = kwargs.get('profile', 'Default')
-    options.add_argument("window-size=1400,600")
     options.add_argument('disable-gpu')
     options.add_argument(f'window-size={window_size}')
     options.add_argument(f'user-data-dir={data_dir}')
