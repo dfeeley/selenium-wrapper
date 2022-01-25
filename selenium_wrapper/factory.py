@@ -57,8 +57,8 @@ def _options(**kwargs):
     options.add_argument(f"user-data-dir={data_dir}")
     options.add_argument(f"user-agent={user_agent}")
     options.add_argument(f"profile-directory={profile}")
-    options.add_argument("remote-debugging-port=9222")
-    options.add_argument("remote-debugging-address=0.0.0.0")
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option("useAutomationExtension", False)
+    # options.add_argument("remote-debugging-port=9222")
+    # options.add_argument("remote-debugging-address=0.0.0.0")
+    # options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    # options.add_experimental_option("useAutomationExtension", False)
     return options
