@@ -2,3 +2,4 @@ dist/
 adhoc/
 __pycache__/
 *.pyc
+selenium_wrapper.egg-info/
